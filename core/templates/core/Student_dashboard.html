@@ -1,0 +1,31 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'core/dashboard.css' %}">
+
+    <div class="dashboard">
+    <h2>{{ request.user.studentuser.name }}'s Dashboard</h2>
+    
+    <div class="options">
+        <a href="{% url 'loginviewurl' %}" class="option">
+            <span>Search For Book</span>
+        </a>
+        <a href="{% url 'loginviewurl' %}" class="option">
+            <span>Request For Book</span>
+        </a>
+        <a href="{% url 'loginviewurl' %}" class="option">
+            <span>Book Issued</span>
+        </a>
+        <a href="{% url 'loginviewurl' %}" class="option">
+            <span>Fine Payment</span>
+        </a>
+        {% comment %} <a href="{% url 'loginviewurl' %}" class="option">
+            <span>Notifications</span>
+        </a> {% endcomment %}
+    </div>
+    <form method="post" action="{% url 'logout' %}">
+  {% csrf_token %}
+  <button type="submit">Logout</button>
+</form>
+</div>
+
+</div>
