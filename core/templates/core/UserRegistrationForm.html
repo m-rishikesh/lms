@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+        }
+        form {
+            background: #fff;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+        input[type="submit"] {
+            margin-top: 20px;
+            padding: 10px;
+            width: 100%;
+            background-color: #4285f4;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #306ac1;
+        }
+        .errors {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2>User Registration</h2>
+    <form method="post" action="">
+        {% csrf_token %}
+
+        <!-- Username -->
+        <label for="id_username">Email</label>
+        <input type="email" name="username" id="id_username" value="{{ form.username.value|default_if_none:'' }}">
+        {% if form.username.errors %}
+            <div class="errors">{{ form.username.errors }}</div>
+        {% endif %}
+
+        <!-- First Name -->
+        <label for="id_first_name">First Name</label>
+        <input type="text" name="first_name" id="id_first_name" value="{{ form.first_name.value|default_if_none:'' }}">
+        {% if form.first_name.errors %}
+            <div class="errors">{{ form.first_name.errors }}</div>
+        {% endif %}
+
+        <!-- Last Name -->
+        <label for="id_last_name">Last Name</label>
+        <input type="text" name="last_name" id="id_last_name" value="{{ form.last_name.value|default_if_none:'' }}">
+        {% if form.last_name.errors %}
+            <div class="errors">{{ form.last_name.errors }}</div>
+        {% endif %}
+
+        <!-- Password -->
+        <label for="id_password">Password</label>
+        <input type="password" name="password" id="id_password">
+        {% if form.password.errors %}
+            <div class="errors">{{ form.password.errors }}</div>
+        {% endif %}
+
+        <!-- Role -->
+        <label for="id_role">Role</label>
+        <select name="role" id="id_role">
+            <option value="">Select Role</option>
+            <option value="STU" {% if form.role.value == "STU" %}selected{% endif %}>Student</option>
+            <option value="FAC" {% if form.role.value == "FAC" %}selected{% endif %}>Faculty</option>
+        </select>
+        {% if form.role.errors %}
+            <div class="errors">{{ form.role.errors }}</div>
+        {% endif %}
+        
+        <!-- For Student USN -->
+<label for="id_usn">USN (for students)</label>
+<input type="text" name="usn" id="id_usn" value="{{ form.usn.value|default_if_none:'' }}">
+{% if form.usn.errors %}
+    <div class="errors">{{ form.usn.errors }}</div>
+{% endif %}
+
+<!-- For Faculty ID -->
+<label for="id_faculty_id">Faculty ID (for faculty)</label>
+<input type="text" name="faculty_id" id="id_faculty_id" value="{{ form.faculty_id.value|default_if_none:'' }}">
+{% if form.faculty_id.errors %}
+    <div class="errors">{{ form.faculty_id.errors }}</div>
+{% endif %}
+
+
+        <input type="submit" value="Register">
+    </form>
+</body>
+</html>

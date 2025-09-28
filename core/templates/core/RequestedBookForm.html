@@ -1,0 +1,107 @@
+{% block content %}
+<h2>Request a Book</h2>
+
+<style>
+/* Container for form + table */
+.request-container {
+    display: flex;
+    gap: 30px; /* space between form and table */
+    align-items: flex-start; 
+    margin-top: 20px;
+}
+
+/* Left form styling */
+.request-form-container {
+    flex: 1; /* take up smaller width */
+}
+
+.request-form table {
+    width: 100%;
+}
+
+.request-form button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.request-form button:hover {
+    background-color: #45a049;
+}
+
+/* Right table styling */
+.request-table-container {
+    flex: 2; /* take more space than form */
+}
+
+.book-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.book-table th, .book-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.book-table th {
+    background-color: #f4f4f4;
+    text-align: left;
+}
+
+.book-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.book-table tr:hover {
+    background-color: #f1f1f1;
+}
+</style>
+
+<div class="request-container">
+    <!-- Left: Form -->
+    <div class="request-form-container">
+        <form method="post" class="request-form">
+            {% csrf_token %}
+            <table>
+                {{ form.as_table }}
+            </table>
+            <button type="submit">Submit Request</button>
+        </form>
+    </div>
+
+    <!-- Right: My Requests Table -->
+    <div class="request-table-container">
+        <h3>My Requests</h3>
+        {% if RequestList %}
+        <table class="book-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Status</th>
+                    <th>Requested At</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in RequestList %}
+                <tr>
+                    <td>{{ request.title }}</td>
+                    <td>{{ request.author }}</td>
+                    <td>{{ request.status }}</td>
+                    <td>{{ request.requested_at }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>You have not submitted any requests yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

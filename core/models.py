@@ -3,6 +3,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
+
 # Create your models here.
 
 class User(AbstractUser):
@@ -16,9 +18,6 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.role} - {self.username}"
-
-from django.db import models
-from django.utils import timezone
 
 
 class Book(models.Model):
@@ -60,44 +59,24 @@ class Student(models.Model):
     usn = models.CharField(max_length=50,primary_key=True,verbose_name='USN')
     email = models.EmailField(max_length=254,null=False,verbose_name='EMAIL')
     user = models.OneToOneField(User, on_delete=models.CASCADE,related_name='studentuser',null=True,blank=True)
-    book = models.ForeignKey(Book, verbose_name='Books', on_delete=models.CASCADE,related_name='alloted_books_by_std',null=True,blank=True)
+    book = models.ManyToManyField(Book, verbose_name='Books',related_name='alloted_books_by_std',blank=True)
 
     def __str__(self):
         return f"{self.name} ({self.usn})"
 
-@receiver(post_save, sender=Student)
-def create_student_user(sender,instance,created, **kwargs):
-    if created and not instance.user:
-        user = User.objects.create_user(
-            username=instance.email,
-            email=instance.email,
-            password='123',
-            role = User.Role_choice.STUDENT,
-        )
-        instance.user = user
-        instance.save()
+
     
 class Faculty(models.Model):
     name = models.CharField(max_length=50,null=False,verbose_name='FULL NAME')
     id = models.CharField(max_length=50,primary_key=True,verbose_name='ID')
     email = models.EmailField(max_length=254,null=False,verbose_name='EMAIL')
     user = models.OneToOneField(User, on_delete=models.CASCADE,related_name='facultyuser',null=True,blank=True)
-    book = models.ForeignKey(Book, verbose_name='Books', on_delete=models.CASCADE,related_name='alloted_books_by_faculty',null=True,blank=True)
+    book = models.ManyToManyField(Book, verbose_name='Books',related_name='alloted_books_by_faculty',blank=True)
 
     def __str__(self):
         return f"{self.name} ({self.id})"
 
-@receiver(post_save, sender=Faculty)
-def create_faculty_user(sender,instance,created, **kwargs):
-    if created and not instance.user:
-        user = User.objects.create_user(
-            username=instance.email,
-            email=instance.email,
-            password='123',
-            role = User.Role_choice.FACULTY,
-        )
-        instance.user = user
-        instance.save()
+
 
 class Librarian(models.Model):
     name = models.CharField(verbose_name='FULL NAME', max_length=50)
@@ -115,3 +94,23 @@ def create_librarian_user(sender,instance,created, **kwargs):
         )
         instance.user = user
         instance.save()
+
+class BookRequest(models.Model):
+    REQUEST_STATUS = [
+        ("PENDING", "Pending"),
+        ("REVIEWED", "Reviewed"),
+        ("REJECTED", "Rejected"),
+    ]
+     
+    requestedBy = models.ForeignKey(User, verbose_name='RequestedBy', on_delete=models.CASCADE)
+    # librarian = models.ForeignKey(Librarian, verbose_name=RequestedTo, on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)                  
+    author = models.CharField(max_length=100, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)     
+    status = models.CharField(max_length=10, choices=REQUEST_STATUS, default="PENDING")
+    requested_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.requestedBy.role} - {self.requestedBy.username}"
+    
+    

@@ -6,13 +6,13 @@
     <h2>{{ request.user.facultyuser.name }}'s Dashboard</h2>
     
     <div class="options">
-        <a href="{% url 'loginviewurl' %}" class="option">
+        <a href="{% url 'searchbook' %}" class="option">
             <span>Search For Book</span>
         </a>
-        <a href="{% url 'loginviewurl' %}" class="option">
+        <a href="{% url 'requestbook' %}" class="option">
             <span>Request For Book</span>
         </a>
-        <a href="{% url 'loginviewurl' %}" class="option">
+        <a href="{% url 'bookissued' %}" class="option">
             <span>Book Issued</span>
         </a>
         {% comment %} <a href="{% url 'loginviewurl' %}" class="option">

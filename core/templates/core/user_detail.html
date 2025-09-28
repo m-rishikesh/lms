@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile Details</title>
+    <style>
+        body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 5px; }
+        h2 { text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #4285f4; color: #fff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>{{ profile.name }}'s Details</h2>
+        <p><strong>Email:</strong> {{ profile.email }}</p>
+        {% if profile.usn %}
+            <p><strong>USN:</strong> {{ profile.usn }}</p>
+        {% else %}
+            <p><strong>ID:</strong> {{ profile.id }}</p>
+        {% endif %}
+
+        <h3>Books Assigned</h3>
+{% if profile.book.all %}
+<table>
+    <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Category</th>
+        <th>Action</th>
+    </tr>
+    {% for book in profile.book.all %}
+    <tr>
+        <td>{{ book.title }}</td>
+        <td>{{ book.author }}</td>
+        <td>{{ book.get_category_display }}</td>
+        <td>
+            {% if profile.usn %}
+                <!-- Student Remove -->
+                <a href="{% url 'remove_book' 'student' profile.usn book.id %}" 
+                   onclick="return confirm('Are you sure you want to remove this book?');">
+                    Remove
+                </a>
+            {% else %}
+                <!-- Faculty Remove -->
+                <a href="{% url 'remove_book' 'faculty' profile.id book.id %}" 
+                   onclick="return confirm('Are you sure you want to remove this book?');">
+                    Remove
+                </a>
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No books assigned.</p>
+{% endif %}
+
+
+    </div>
+</body>
+</html>

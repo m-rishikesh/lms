@@ -6,14 +6,14 @@
     <h2>{{ request.user.libuser.name }}'s Dashboard</h2>
     
     <div class="options">
-        <a href="{% url 'loginviewurl' %}" class="option">
+        <a href="{% url 'registeruser' %}" class="option">
             <span>Registration</span>
         </a>
         <a href="{% url 'loginviewurl' %}" class="option">
             <span>Manage Catalogue</span>
         </a>
-        <a href="{% url 'loginviewurl' %}" class="option">
-            <span>Faculty Student Profile</span>
+        <a href="{% url 'userlist' %}" class="option">
+            <span>Faculty/Student Profile</span>
         </a>
         <a href="{% url 'loginviewurl' %}" class="option">
             <span>Push Notification</span>

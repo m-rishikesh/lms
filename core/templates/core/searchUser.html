@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profiles</title>
+    <style>
+        body { font-family: Arial; background: #f4f4f4; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: #fff; padding: 20px; border-radius: 5px; }
+        h2 { text-align: center; }
+        form.search { margin-bottom: 20px; text-align: center; }
+        input[type="text"] { padding: 8px; width: 60%; border-radius: 3px; border: 1px solid #ccc; }
+        input[type="submit"] { padding: 8px 15px; border-radius: 3px; border: none; background: #4285f4; color: white; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #4285f4; color: #fff; }
+        a { color: #d9534f; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>User Profiles</h2>
+
+        <!-- Search Form -->
+        <form method="get" action="" class="search">
+            <input type="text" name="q" placeholder="Search by name, USN, or ID" value="{{ request.GET.q }}">
+            <input type="submit" value="Search">
+        </form>
+
+        <!-- User List -->
+        {% if UserList %}
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>USN/ID</th>
+                <th>Role</th>
+                <th>Action</th>
+            </tr>
+            {% for profile in UserList %}
+            <tr>
+                <td>{{ profile.name }}</td>
+                <td>{{ profile.email }}</td>
+                <td>{% if profile.usn %}{{ profile.usn }}{% elif profile.id %}{{ profile.id }}{% endif %}</td>
+                <td>{{ profile.user.role }}</td>
+                <td>
+                    {% if profile.usn %}
+                        <a href="{% url 'userdetail' 'student' profile.usn %}">View</a>
+                    {% elif profile.id %}
+                        <a href="{% url 'userdetail' 'faculty' profile.id %}">View</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>No users found.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,76 @@
+
+{% block content %}
+<h2>Books Issued to Me</h2>
+
+<style>
+/* Container for table */
+.bookissued-container {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.book-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.book-table th, .book-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.book-table th {
+    background-color: #f4f4f4;
+    text-align: left;
+}
+
+.book-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.book-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.book-table caption {
+    caption-side: top;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+</style>
+
+<div class="bookissued-container">
+    {% if bookissued %}
+    <table class="book-table">
+        <caption>Issued Books</caption>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>ISBN</th>
+                <th>Category</th>
+                <th>Publisher</th>
+                <th>Published Year</th>
+                <th>Issued Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in bookissued %}
+            <tr>
+                <td>{{ book.title }}</td>
+                <td>{{ book.author }}</td>
+                <td>{{ book.isbn }}</td>
+                <td>{{ book.get_category_display }}</td>
+                <td>{{ book.publisher }}</td>
+                <td>{{ book.published_year }}</td>
+                <td>{{ book.added_date|date:"d M Y" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No books have been issued to you.</p>
+    {% endif %}
+</div>
+{% endblock %}

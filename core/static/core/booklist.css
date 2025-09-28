@@ -1,0 +1,57 @@
+/* Search form */
+form {
+  margin-bottom: 15px;
+}
+
+form input[type="text"] {
+  padding: 8px;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+form button {
+  padding: 8px 12px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #45a049;
+}
+
+/* Table styles */
+.book-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-family: Arial, sans-serif;
+}
+
+.book-table th, .book-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.book-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.book-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.book-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.no-data {
+  text-align: center;
+  font-style: italic;
+  color: #888;
+}
