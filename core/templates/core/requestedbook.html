@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Requests</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-2: #7c3aed;
+      --success: #10b981;
+      --danger: #ef4444;
+      --radius: 12px;
+      --shadow: 0 6px 18px rgba(16,24,40,0.06);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: linear-gradient(180deg, #f9fbff 0%, var(--bg) 100%);
+      color: #0f1724;
+      padding: 28px;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      margin:0;
+      font-size:20px;
+      letter-spacing: .2px;
+    }
+    header .sub { color:var(--muted); font-size:13px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    /* Card */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(15, 23, 36, 0.04);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .card .title-row {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:10px;
+    }
+
+    .book-title {
+      font-weight:700;
+      font-size:16px;
+      margin:0;
+      color:#0b1220;
+    }
+    .book-meta {
+      color:var(--muted);
+      font-size:13px;
+      margin-top:6px;
+    }
+
+    .desc {
+      margin-top:8px;
+      color:#374151;
+      line-height:1.45;
+      font-size:14px;
+    }
+
+    .avatar {
+      width:44px;
+      height:44px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      background: linear-gradient(135deg,var(--accent),var(--accent-2));
+      color:white;
+      font-weight:700;
+      box-shadow: 0 6px 18px rgba(37,99,235,0.08);
+      flex-shrink:0;
+    }
+
+    .meta-row {
+      display:flex;
+      gap:12px;
+      align-items:center;
+      margin-top:8px;
+    }
+
+    .username {
+      font-weight:600;
+      color:#0f1724;
+      font-size:13px;
+    }
+    .small-muted {
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    /* empty state */
+    .empty {
+      text-align:center;
+      padding:36px;
+      color:var(--muted);
+      background: linear-gradient(180deg, rgba(124,58,237,0.04), rgba(96,165,250,0.02));
+      border-radius:12px;
+      border:1px dashed rgba(15,23,36,0.05);
+    }
+
+    /* responsive tweaks */
+    @media (max-width:640px){
+      body { padding:16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Pending Requests</h1>
+        <div class="sub">List of incoming book/other requests</div>
+      </div>
+      <div class="sub">{{ requests|length }} request{% if requests|length != 1 %}s{% endif %}</div>
+    </header>
+
+    {% if requests %}
+      <div class="grid">
+        {% for r in requests %}
+          <article class="card" role="article" aria-label="{{ r.title }}">
+            <div class="title-row">
+              <div style="flex:1; min-width:0;">
+                <div class="book-title">{{ r.title }}</div>
+                <div class="book-meta">by <strong>{{ r.author }}</strong></div>
+              </div>
+
+              <div style="text-align:right;">
+                <div class="avatar" title="{{ r.requestedBy.username }}">
+                  {{ r.requestedBy.username|slice:":1"|upper }}
+                </div>
+              </div>
+            </div>
+
+            <div class="desc">
+              {{ r.description|linebreaksbr }}
+            </div>
+
+            <div class="meta-row" aria-hidden="false">
+              <div>
+                <div class="username">{{ r.requestedBy.username }}</div>
+                <div class="small-muted">Requested by</div>
+              </div>
+              <div style="margin-left:auto; text-align:right;">
+                <!-- optional controls placeholders -->
+                <!-- <button class="btn-accept">Accept</button> -->
+                <!-- <button class="btn-decline">Decline</button> -->
+                <div class="small-muted">#{{ r.id }}</div>
+              </div>
+              <div>
+                <form method="post" action="{% url 'request_delete' r.id %}">
+                    {% csrf_token %}
+        <button type="submit" onclick="return confirm('Are you sure you want to delete this?');" 
+                style="background:red;color:white;padding:5px 10px;border:none;border-radius:5px;">
+          Delete
+        </button>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty">
+        <h3 style="margin:0 0 8px 0">No requests found</h3>
+        <p style="margin:0">There are currently no incoming requests. This area will display requests as they arrive.</p>
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>

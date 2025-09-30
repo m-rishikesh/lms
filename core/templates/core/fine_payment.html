@@ -1,0 +1,27 @@
+
+{% block content %}
+<div class="container">
+  <h2>Pay Fine</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Pay Now</button>
+  </form>
+
+  <h3>Your Fine History</h3>
+  <ul>
+    {% for fine in request.user.studentuser.fines.all %}
+      <li>
+        {{ fine.book.title }} - ₹{{ fine.amount }}
+        {% if fine.paid %}
+          <span style="color:green;">(Paid)</span>
+        {% else %}
+          <span style="color:red;">(Unpaid)</span>
+        {% endif %}
+      </li>
+    {% empty %}
+      <li>No fines yet 🎉</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

@@ -14,6 +14,12 @@ from core.views import (
     UserView,
     UserDetailView,
     RemoveBookView,
+    manageCatalougeView,
+    NotificationView,
+    RequestedBookView,
+    deleteRequestedBookView,
+    NotificationSharedView,
+    FinePaymentView,
 )
 urlpatterns = [
     path('',LogInView.as_view(),name='loginviewurl'),
@@ -29,5 +35,11 @@ urlpatterns = [
     path('logout/',LogoutView.as_view(next_page='loginviewurl'),name='logout'),
     path('librarian/registeruser',UserRegistrationView.as_view(),name='registeruser'),
     path('<str:type>/<str:pk>/remove_book/<int:book_id>/', RemoveBookView.as_view(), name='remove_book'),
+    path('catalouge/',manageCatalougeView.as_view(),name='manage-catalouge'),
+    path('notification/',NotificationView.as_view(),name='notification'),
+    path('requests/books/',RequestedBookView.as_view(),name='requestedbooks'),
+    path("requests/delete/<int:pk>/", deleteRequestedBookView.as_view(), name="request_delete"),
+    path('notification/list',NotificationSharedView.as_view(),name='notificationlist'),
+    path("fine-payment/", FinePaymentView.as_view(), name="fine_payment"),
     path('admin/', admin.site.urls),
 ]

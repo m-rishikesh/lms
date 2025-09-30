@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Notifications</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --radius: 12px;
+      --shadow: 0 8px 30px rgba(15,23,42,0.06);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      padding:28px;
+      background:linear-gradient(180deg,#fbfdff 0%,var(--bg) 100%);
+      color:#0f1724;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    .container{ max-width:1100px; margin:0 auto; }
+
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:18px;
+    }
+    h1{ margin:0; font-size:20px; }
+    .sub{ color:var(--muted); font-size:13px; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap:16px;
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:16px;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(15,23,42,0.04);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-height:120px;
+    }
+
+    .title-row{ display:flex; align-items:flex-start; gap:12px; }
+    .badge{
+      width:46px; height:46px; border-radius:50%;
+      display:inline-flex; align-items:center; justify-content:center;
+      background:linear-gradient(135deg,var(--accent),#7c3aed);
+      color:white; font-weight:700; font-size:16px;
+      flex-shrink:0;
+    }
+
+    .title{
+      font-weight:700; font-size:16px; margin:0; color:#0b1220;
+      word-break:break-word;
+    }
+    .msg{
+      color:#374151; line-height:1.45; font-size:14px; margin-top:8px;
+      overflow-wrap:break-word;
+    }
+
+    .meta{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:10px; }
+    .time{ color:var(--muted); font-size:12px; }
+
+    .empty{
+      text-align:center; padding:36px; color:var(--muted);
+      background: linear-gradient(180deg, rgba(37,99,235,0.04), rgba(124,58,237,0.02));
+      border-radius:12px; border:1px dashed rgba(15,23,42,0.05);
+    }
+
+    @media(max-width:640px){
+      body{ padding:16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Notifications</h1>
+        <div class="sub">Latest messages from the library</div>
+      </div>
+      <div class="sub">{{ notifications|length }} notification{% if notifications|length != 1 %}s{% endif %}</div>
+    </header>
+
+    {% if notifications %}
+      <section class="grid" aria-live="polite">
+        {% for n in notifications %}
+          <article class="card" role="article" aria-label="{{ n.title|default:'Notification' }}">
+            <div class="title-row">
+              <div class="badge" aria-hidden="true">
+                {{ n.title|slice:":1"|upper }}
+              </div>
+              <div style="min-width:0;">
+                <div class="title">{{ n.title }}</div>
+                <!-- optional subtitle or small metadata can go here -->
+                <!-- <div class="sub small-muted">Category / Tag</div> -->
+              </div>
+            </div>
+
+            <div class="msg">
+              {{ n.message|linebreaksbr }}
+            </div>
+
+            <div class="meta" aria-hidden="false">
+              <div class="time">
+                {% if n.timestamp %}{{ n.timestamp|date:"M d, Y H:i" }}{% endif %}
+              </div>
+              <div class="sub">
+                <!-- placeholder for actions or status -->
+                ID: #{{ n.id }}
+              </div>
+              <div class="sub">
+                <!-- placeholder for actions or status -->
+                -by: #{{ n.user }}
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </section>
+    {% else %}
+      <div class="empty" role="status">
+        <h3 style="margin:0 0 8px 0">No notifications</h3>
+        <p style="margin:0">You're all caught up — there are no notifications right now.</p>
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>

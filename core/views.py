@@ -1,17 +1,17 @@
 from django.shortcuts import render,get_object_or_404
 from django.views.generic.edit import CreateView,FormView
-from django.views.generic import ListView,DetailView
-from core.models import User,Book,BookRequest,Student,Faculty
+from django.views.generic import ListView,DetailView,DeleteView
+from core.models import User,Book,BookRequest,Student,Faculty,Notification
 from django.contrib.auth import authenticate, login
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import View
-from core.forms import LoginForm,RequestBookForm,UserRegistrationForm
+from core.forms import LoginForm,RequestBookForm,UserRegistrationForm,NotificationForm,FinePaymentForm
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin,UserPassesTestMixin
 from django.http import HttpResponse
 from django.utils import timezone
-from django.db.models import Q
+from django.db.models import Q,Sum,Count
 # Create your views here.
 
 # LogIn For Student/Faculty/Librarian/Admin
@@ -208,3 +208,99 @@ class RemoveBookView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def test_func(self):
         return self.request.user.is_staff
+
+
+class manageCatalougeView(LoginRequiredMixin,UserPassesTestMixin,View):
+    template_name = 'core/managecatalouge.html'
+    def get(self,request,*args,**kwargs):
+
+        book_by_genre = Book.objects.values('category').annotate(
+            total_copies=Sum('total_copies'),
+            available_copies = Sum('available_copies'),
+            total_book_by_genre = Count('id')
+            )
+
+        books = Book.objects.all()
+        category_choices = Book.Category.choices
+
+        return render(request,self.template_name,{
+            "books_by_genre": book_by_genre,
+            "books": books,
+            "category_choices": category_choices,
+        })
+    
+    def post(self,request,*args,**kwargs):
+        action = request.POST.get("action")
+
+        if action == 'add':
+            Book.objects.create(
+                title=request.POST.get("title"),
+                author=request.POST.get("author"),
+                isbn=request.POST.get("isbn"),
+                category=request.POST.get("category"),
+                publisher=request.POST.get("publisher"),
+                published_year=request.POST.get("published_year") or None,
+                total_copies=int(request.POST.get("total_copies", 1)),
+                available_copies=int(request.POST.get("total_copies", 1)),
+            )
+
+        if action == 'delete':
+            book_id = request.POST.get("book_id")
+            Book.objects.filter(id=book_id).delete()
+
+        return redirect('manage-catalouge')
+    
+    def test_func(self):
+        return self.request.user.is_staff
+    
+class NotificationView(LoginRequiredMixin,UserPassesTestMixin,FormView):
+    form_class = NotificationForm
+    template_name = 'core/notification.html'
+    success_url = reverse_lazy('notification')
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+
+    def test_func(self):
+        return self.request.user.is_staff
+
+class RequestedBookView(LoginRequiredMixin,UserPassesTestMixin,ListView):
+    model=BookRequest
+    template_name = 'core/requestedbook.html'
+    context_object_name = 'requests'
+
+    def test_func(self):
+        return self.request.user.is_staff
+    
+class deleteRequestedBookView(LoginRequiredMixin,UserPassesTestMixin,DeleteView):
+    model=BookRequest
+    template_name = 'core/deleterequests.html'
+    success_url = reverse_lazy('requestedbooks')
+    def test_func(self):
+        return self.request.user.is_staff
+    
+class NotificationSharedView(LoginRequiredMixin,ListView):
+    model = Notification
+    template_name = 'core/showNotification.html'
+    context_object_name = 'notifications'
+
+class FinePaymentView(LoginRequiredMixin, FormView):
+    template_name = "core/fine_payment.html"
+    form_class = FinePaymentForm
+    success_url = reverse_lazy("fine_payment")
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        student = Student.objects.get(user=self.request.user)
+        form.fields["book"].queryset = student.book.all()
+        return form
+
+    def form_valid(self, form):
+        student = Student.objects.get(user=self.request.user)
+        fine = form.save(commit=False)
+        fine.student = student
+        fine.paid = True   
+        fine.save()
+        return super().form_valid(form)
+

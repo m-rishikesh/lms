@@ -1,0 +1,15 @@
+<h1>📑 All Requests</h1>
+
+<div class="requests">
+  {% for r in requests %}
+    <div class="card">
+      <h2>{{ r.title }}</h2>
+      <p><strong>Author:</strong> {{ r.author }}</p>
+      <p><strong>Requested By:</strong> {{ r.requestedBy.username }}</p>
+      <p>{{ r.description }}</p>
+      </form>
+    </div>
+  {% empty %}
+    <p>No requests found.</p>
+  {% endfor %}
+</div>

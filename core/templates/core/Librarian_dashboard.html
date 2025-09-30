@@ -9,13 +9,18 @@
         <a href="{% url 'registeruser' %}" class="option">
             <span>Registration</span>
         </a>
-        <a href="{% url 'loginviewurl' %}" class="option">
+        <a href="{% url 'manage-catalouge' %}" class="option">
             <span>Manage Catalogue</span>
         </a>
         <a href="{% url 'userlist' %}" class="option">
             <span>Faculty/Student Profile</span>
         </a>
-        <a href="{% url 'loginviewurl' %}" class="option">
+
+        <a href="{% url 'requestedbooks' %}" class="option">
+            <span>Requested Books</span>
+        </a>
+
+        <a href="{% url 'notification' %}" class="option">
             <span>Push Notification</span>
         </a>
         {% comment %} <a href="{% url 'loginviewurl' %}" class="option">

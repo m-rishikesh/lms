@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Library Dashboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 30px;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    h2 {
+      color: #34495e;
+      margin-top: 40px;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 5px;
+    }
+
+    p {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      background-color: #fff;
+    }
+
+    th, td {
+      padding: 10px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #2c3e50;
+      color: #fff;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    form {
+      margin-top: 20px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    input[type="text"], input[type="number"], select {
+      padding: 8px 10px;
+      margin-right: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      min-width: 150px;
+    }
+
+    button {
+      padding: 8px 15px;
+      background-color: #27ae60;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #219150;
+    }
+
+    button.delete {
+      background-color: #e74c3c;
+    }
+
+    button.delete:hover {
+      background-color: #c0392b;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .form-group input, .form-group select {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>📚 Library Dashboard</h1>
+
+<h2>Add a New Book</h2>
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="action" value="add">
+
+  <div class="form-group">
+    <input type="text" name="title" placeholder="Title" required>
+    <input type="text" name="author" placeholder="Author" required>
+    <input type="text" name="isbn" placeholder="ISBN" required>
+    <select name="category" required>
+      {% for code, name in category_choices %}
+        <option value="{{ code }}">{{ name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="form-group">
+    <input type="text" name="publisher" placeholder="Publisher">
+    <input type="number" name="published_year" placeholder="Published Year">
+    <input type="number" name="total_copies" placeholder="Total Copies" min="1" value="1">
+  </div>
+
+  <button type="submit">Add Book</button>
+</form>
+
+<h2>Summary by Category</h2>
+<p>Total Copies in Library: {{ total_copies }}</p>
+
+<table>
+  <tr>
+    <th>Category</th>
+    <th>Total Copies</th>
+    <th>Available Copies</th>
+  </tr>
+  {% for row in books_by_genre %}
+    <tr>
+      <td>{{ row.category }}</td>
+      <td>{{ row.total_copies }}</td>
+      <td>{{ row.available_copies }}</td>
+    </tr>
+  {% endfor %}
+</table>
+
+<h2>All Books</h2>
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Title</th>
+    <th>Author</th>
+    <th>ISBN</th>
+    <th>Category</th>
+    <th>Publisher</th>
+    <th>Year</th>
+    <th>Total Copies</th>
+    <th>Available Copies</th>
+    <th>Action</th>
+  </tr>
+  {% for book in books %}
+    <tr>
+      <td>{{ book.id }}</td>
+      <td>{{ book.title }}</td>
+      <td>{{ book.author }}</td>
+      <td>{{ book.isbn }}</td>
+      <td>{{ book.get_category_display }}</td>
+      <td>{{ book.publisher }}</td>
+      <td>{{ book.published_year }}</td>
+      <td>{{ book.total_copies }}</td>
+      <td>{{ book.available_copies }}</td>
+      <td>
+        <form method="post" style="display:inline;">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="delete">
+          <input type="hidden" name="book_id" value="{{ book.id }}">
+          <button type="submit" class="delete">Delete</button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+</table>
+
+</body>
+</html>

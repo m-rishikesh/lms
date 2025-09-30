@@ -83,6 +83,9 @@ class Librarian(models.Model):
     email = models.CharField(verbose_name='EMAIL', max_length=50)
     user = models.OneToOneField(User, verbose_name='USER',related_name='libuser',on_delete=models.CASCADE,null=True,blank=True)
 
+    def __str__(self):
+        return f"{self.name} - Librarian"
+
 @receiver(post_save, sender=Librarian)
 def create_librarian_user(sender,instance,created, **kwargs):
     if created and not instance.user:
@@ -114,3 +117,27 @@ class BookRequest(models.Model):
         return f"{self.requestedBy.role} - {self.requestedBy.username}"
     
     
+class Notification(models.Model):
+    title = models.CharField(max_length=50,null=False,blank=False,verbose_name='Title')
+    message = models.TextField(verbose_name='Message',max_length=1000)
+    user = models.ForeignKey(Librarian, verbose_name="User", on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+    
+
+class Fine(models.Model):
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name="fines"
+    )
+    book = models.ForeignKey(
+        Book, on_delete=models.CASCADE, related_name="fines"
+    )
+    amount = models.DecimalField(max_digits=8, decimal_places=2)
+    paid = models.BooleanField(default=False)
+    payment_date = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        status = "Paid" if self.paid else "Unpaid"
+        return f"Fine: {self.book.title} - {self.amount} ({status})"
